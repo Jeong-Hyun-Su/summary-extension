@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="toggle.css"/>
+    <style>
+        body {
+          width: 400px;
+          min-height: 250px;
+        }
+        body p{
+          font-size: 20px;
+        }
+        #paragraph p{
+          font-size: 11px;
+          border-style: solid;
+          border-radius: 10px;
+          padding: 8px;
+        }
+        .pg{
+          border-color: crimson;
+        }
+        .summary{
+          border-color: darkblue;
+        }
+    </style>
+  </head>
+  <body>
+    <p>Summary</p>
+    <div style="display: flex;">
+      <p style="font-size: 14px;">Drag</p>
+      <label class="switch">
+        <input type="checkbox"/>
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <div id="paragraph">
+    </div>
+    <br>
+    <button id="summaryBtn">SHOW</button>
+
+
+    <script src="popup.js"></script>
+  </body>
+
+</html>
