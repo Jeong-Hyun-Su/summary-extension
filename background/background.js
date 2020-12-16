@@ -26,6 +26,10 @@ var background = {
 
                         background["saveData"]();
                     }
+                    else if("toggle" in request){
+                        console.log("request.toggle : " + request.toggle);
+                        background["toggle"](request.toggle);
+                    }
                 });
 
                 /*-----------------
@@ -44,6 +48,13 @@ var background = {
                         }
                     });
                 });
+            },
+
+    toggle:
+            function(tog){
+                if(typeof this.port !== 'undefined'){
+                    this.port.postMessage({toggle: tog});
+                }
             },
 
     saveData:

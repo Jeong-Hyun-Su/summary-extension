@@ -1,11 +1,26 @@
 let popupMenu = document.createElement("div");
-popupMenu.innerText = "Add";
 popupMenu.className = "custom-menu";
-popupMenu.setAttribute("style", "z-index:1000; position:absolute; background-color: #C0C0C0; border: 1px solid black; padding: 2px;");
+popupMenu.setAttribute("style", "z-index:1000; position:absolute; padding: 2px;");
+
+let plus_button = document.createElement("img");
+plus_button.src = chrome.extension.getURL("../images/plus.png");
+
+let cancle_button = document.createElement("img");
+cancle_button.src = chrome.extension.getURL("../images/cancle.png");
+cancle_button.setAttribute("style", "margin-left:5px;");
+
+popupMenu.appendChild(plus_button);
+popupMenu.appendChild(cancle_button);
+
 document.body.appendChild(popupMenu);
 
 // 포트 이름 정하고 background에 connect 시도
 var myPort = chrome.runtime.connect({name: "port-from-cs"});
+
+var toggle = false;
+chrome.storage.sync.get("toggle", function(items){
+    toggle = items.toggle;
+});
 
 // background로부터 Message Receive
 myPort.onMessage.addListener(function(msg){
@@ -13,23 +28,27 @@ myPort.onMessage.addListener(function(msg){
     if("summary" in msg){
         alert(msg.summary);
     }
+    else if("toggle" in msg){
+        toggle = msg.toggle;
+    }
 });
 
 // 우클릭 Custom Menu
 $(document).bind("contextmenu", function(event) { 
+    if(toggle){
         event.preventDefault();
         
         let getText = selectText().trim();
 
-        popupMenu.onclick = function(){
+        plus_button.onclick = function(){
             const text = getText;
             if(getText != ""){
                 myPort.postMessage({addText: text});
             }
         }
-        $(".custom-menu").css({top: event.pageY + "px", left: event.pageX + "px"});
+        $(".custom-menu").css({top: (event.pageY + 5) + "px", left: (event.pageX + 11) + "px"});
         $("div.custom-menu").show();
-        
+    }    
 })
 .bind("click", function(event) {
         $("div.custom-menu").hide();
