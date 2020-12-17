@@ -61,7 +61,7 @@ var background = {
             function(){
                 chrome.storage.sync.set({"data" : this.data}, function() {
                     if (chrome.runtime.error) {
-                    console.log("Runtime error.");
+                        console.log("Runtime error.");
                     }
                 })
             },
@@ -70,25 +70,21 @@ var background = {
             function(article){
                 let apiLink = "https://master-summarize-jeong-hyun-su.endpoint.ainize.ai/summary?article=" + article;
 
-                fetch(apiLink)
-                .then(response => {
-                    if ( response.status == 200 )   
-                        return response;
-                    else                            
-                        throw Error("Summary Error");
-                })
-                .then(response => response.text())
-                .then(response => {
-                    chrome.runtime.sendMessage({summary: response});
-                })
-                .catch(e =>{
-                });
+                chrome.runtime.sendMessage({summary: article});
+                // fetch(apiLink)
+                // .then(response => {
+                //     if ( response.status == 200 )   
+                //         return response;
+                //     else                            
+                //         throw Error("Summary Error");
+                // })
+                // .then(response => response.text())
+                // .then(response => {
+                //     chrome.runtime.sendMessage({summary: response});
+                // })
+                // .catch(e =>{
+                // });
             },
 };
 
 background.init();
-
-chrome.browserAction.onClicked.addListener(function() {
-    port_content.postMessage({greeting: "they clicked the button!"});
-});
-

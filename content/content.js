@@ -1,39 +1,27 @@
+//=======================
+// 우클릭 메뉴 동적html 생성
+//=======================
 let popupMenu = document.createElement("div");
 popupMenu.className = "custom-menu";
-popupMenu.setAttribute("style", "z-index:1000; position:absolute; padding: 2px;");
+popupMenu.setAttribute("style", "z-index:1000; position:absolute; padding: 4px 7px 0px 7px; background-color: #9f43cb; box-shadow: 2px 4px 4px 0px rgba(150, 0, 255, 0.7); border-radius: 10px;");
 
 let plus_button = document.createElement("img");
 plus_button.src = chrome.extension.getURL("../images/plus.png");
+plus_button.style.cursor = "pointer";
 
 let cancle_button = document.createElement("img");
 cancle_button.src = chrome.extension.getURL("../images/cancle.png");
-cancle_button.setAttribute("style", "margin-left:5px;");
+cancle_button.style.marginLeft = "5px";
+cancle_button.style.cursor = "pointer";
 
 popupMenu.appendChild(plus_button);
 popupMenu.appendChild(cancle_button);
 
 document.body.appendChild(popupMenu);
 
-// 포트 이름 정하고 background에 connect 시도
-var myPort = chrome.runtime.connect({name: "port-from-cs"});
-
-var toggle = false;
-chrome.storage.sync.get("toggle", function(items){
-    toggle = items.toggle;
-});
-
-// background로부터 Message Receive
-myPort.onMessage.addListener(function(msg){
-    // Api call
-    if("summary" in msg){
-        alert(msg.summary);
-    }
-    else if("toggle" in msg){
-        toggle = msg.toggle;
-    }
-});
-
+//===================
 // 우클릭 Custom Menu
+//===================
 $(document).bind("contextmenu", function(event) { 
     if(toggle){
         event.preventDefault();
@@ -54,7 +42,7 @@ $(document).bind("contextmenu", function(event) {
         $("div.custom-menu").hide();
 });
 
-// 드래그된 텍스트
+// 드래그된 텍스트 가져오기
 function selectText() {
     var selectText = "";
     
@@ -70,38 +58,19 @@ function selectText() {
     return String(selectText);
 }
 
-/*  마우스에 위치하는 HTML 요소를 가져와 PLUS 버튼 생성해서 붙이기.
-    
+//=======================================
+//             백그라운드 통신
+//=======================================
+var myPort = chrome.runtime.connect({name: "port-from-cs"});  // 포트 이름 정하고 background에 connect 시도
 
-    Get - hover html element
-    let x = event.clientX, 
-        y = event.clientY,
-        elementMouseIsOver = document.elementFromPoint(x, y);
+var toggle = false;
+chrome.storage.sync.get("toggle", function(items){            // 저장소로부터 토글 상태 불러오기
+    toggle = items.toggle;      
+});
 
-    let getElement = elementMouseIsOver.getElementsByClassName("ainize_logo");
-    let getText = elementMouseIsOver.innerText;
-    let hasAinizeLogo = false;
-
-    // Check - 단락 Ainize Logo 
-    for(let i=0; i<getElement.length; i++){
-        if(getElement[i].className == "ainize_logo")
-                hasAinizeLogo = true;
+// background로부터 Message Receive
+myPort.onMessage.addListener(function(msg){
+    if("toggle" in msg){
+        toggle = msg.toggle;
     }
-
-    // 로고 없으면, Insert Ainize Logo
-    if(hasAinizeLogo == false){
-        let logo = document.createElement("img");
-
-        logo.className = "ainize_logo";
-        logo.src = chrome.extension.getURL("plus.png");
-        logo.style.cursor = 'pointer';
-
-        // 단락의 마지막 IMG 추가
-        elementMouseIsOver.appendChild(logo);
-
-        logo.onclick = function(){
-            let text = getText;
-            myPort.postMessage({addText: text});
-        };
-    }
-*/
+});

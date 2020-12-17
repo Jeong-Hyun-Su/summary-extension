@@ -4,13 +4,17 @@
 var console = chrome.extension.getBackgroundPage().console;
 
 var app = {
+    textData: "",
+    idList: [],
     init: 
         function(){
+            const that = this;
+
             let data;
             let $paragraph = document.getElementById("paragraph");
+            let $result = document.getElementById("result");
             let $empty = document.getElementById("empty");
             let $slider = document.getElementById("slider");
-            let textData = "";
 
             $slider.onclick = function(){
                 chrome.storage.sync.set({"toggle" : $slider.checked}, function() {
@@ -30,38 +34,57 @@ var app = {
                 if (!chrome.runtime.error) {
                     data = items.data;
 
+                    // 데이터의 유무에 따른, Empty 출력 / 데이터 출력
                     if(data.length != 0){
                         $empty.style.marginTop = '0px';
-                        $empty.style.visibility = 'hidden';
+                        $empty.style.display = 'none'
+
+                        // 저장된 데이터 출력
+                        for(let i = 0; i < data.length; i++){
+                            that.textData += data[i] + " ";
+    
+                            that.idList.push(i);
+    
+                            // <p> 단락 추가
+                            let sentenceHtml = document.createElement("p");
+                            sentenceHtml.innerText = data[i];
+                            sentenceHtml.className = "pg";
+                            
+                            if(i == 0) sentenceHtml.style.marginTop = '0px';
+                            
+                            // Minus 버튼 추가
+                            let img_minus = document.createElement("img");
+                            img_minus.src = "../images/minus.png";
+                            img_minus.setAttribute("style","position:absolute; right:3px; bottom:1px; cursor:pointer;");
+                            img_minus.onclick = function(){
+                                const id = i;
+                                sentenceHtml.remove();
+                                that.textData = null;
+    
+                                if(that.idList.length == 1){
+                                    $empty.style.marginTop = '80px';
+                                    $empty.style.display = 'block';
+                                }
+                                
+                                // 요소들 idList에서 제거 / Background에 전송하면서, 저장소에서 제거  => 싱크
+                                for(let j = 0; j < that.idList.length; j++){
+                                    that.textData += that.idList[j] + " ";
+    
+                                    if(id == that.idList[j]){
+                                        that.idList.splice(j, 1);
+                                        chrome.runtime.sendMessage({delete: j});
+                                    }
+                                }
+                                
+                            }
+                            sentenceHtml.appendChild(img_minus);
+                            
+                            $paragraph.appendChild(sentenceHtml);
+                        }
                     }
                     else{
                         $empty.style.marginTop = '80px';
-                        $empty.style.visibility = 'block';
-                    }
-                    
-                    for(let i = 0; i < data.length; i++){
-                        textData += data[i] + " ";
-
-                        // <p> 단락 추가
-                        let sentenceHtml = document.createElement("p");
-                        sentenceHtml.innerText = data[i];
-                        sentenceHtml.className = "pg";
-                        
-                        if(i == 0) sentenceHtml.style.marginTop = '0px';
-                        
-                        // Minus 버튼 추가
-                        let img_minus = document.createElement("img");
-                        img_minus.src = "../images/minus.png";
-                        img_minus.setAttribute("style","position:absolute; right:3px; bottom:1px; cursor:pointer;");
-                        img_minus.onclick = function(){
-                            const id = i;
-                            sentenceHtml.remove();
-
-                            chrome.runtime.sendMessage({delete: id});
-                        }
-                        sentenceHtml.appendChild(img_minus);
-                        
-                        $paragraph.appendChild(sentenceHtml);
+                        $empty.style.display = 'block';
                     }
                 }
             });
@@ -69,17 +92,15 @@ var app = {
             // Receive the Background Message.
             chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
                 if("summary" in request){
-                    let summaryHtml = document.createElement("p");
-                    summaryHtml.innerText = request.summary;
-                    summaryHtml.className = "summary";
-
-                    $paragraph.appendChild(summaryHtml);
+                    $result.innerText = request.summary;
+                    $result.className = "summary"
                 }
             });
 
+            // Summary 버튼 기능 작동 
             let $summary = document.getElementById("summaryBtn");
             $summary.onclick = function(){
-                chrome.runtime.sendMessage({summary: textData});
+                chrome.runtime.sendMessage({summary: that.textData});
             }
         }
 };

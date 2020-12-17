@@ -40,22 +40,28 @@ body {
     margin-left: 110px;
 }
 
-#paragraph p{
-    position: relative;
-    margin-top: 5px;
+#paragraph p, #result{
+    position: relative;    
     font-size: 12px;
     border-radius: 10px;
     padding: 8px;
-
-    box-shadow: 2px 4px 4px 0px rgba(150, 0, 255, 0.7);
-
 }
+    
+#paragraph p{
+    margin-bottom: 5px;
+    box-shadow: 2px 4px 4px 0px rgba(150, 0, 255, 0.7);
+}
+
 .pg{
     background-color: #9f43cb;
     color: white;
 }
 .summary{
-    border-color: darkblue;
+    margin-top: 8px;
+    margin-bottom: 10px;
+    box-shadow: 2px 4px 4px 0px rgba(4, 0, 252, 0.7);
+    background-color:darkblue;
+    color: white;
 }
 
 #summaryBtn{
