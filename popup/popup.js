@@ -6,6 +6,7 @@ var console = chrome.extension.getBackgroundPage().console;
 var app = {
     textData: "",
     idList: [],
+    textList: [],
     init: 
         function(){
             const that = this;
@@ -44,6 +45,7 @@ var app = {
                             that.textData += data[i] + " ";
     
                             that.idList.push(i);
+                            that.textList.push(data[i]);
     
                             // <p> 단락 추가
                             let sentenceHtml = document.createElement("p");
@@ -59,7 +61,7 @@ var app = {
                             img_minus.onclick = function(){
                                 const id = i;
                                 sentenceHtml.remove();
-                                that.textData = null;
+                                that.textData = "";
     
                                 if(that.idList.length == 1){
                                     $empty.style.marginTop = '80px';
@@ -68,14 +70,14 @@ var app = {
                                 
                                 // 요소들 idList에서 제거 / Background에 전송하면서, 저장소에서 제거  => 싱크
                                 for(let j = 0; j < that.idList.length; j++){
-                                    that.textData += that.idList[j] + " ";
-    
                                     if(id == that.idList[j]){
                                         that.idList.splice(j, 1);
+                                        that.textList.splice(j, 1);
                                         chrome.runtime.sendMessage({delete: j});
+                                        continue;
                                     }
+                                    that.textData += that.textList[j] + " ";
                                 }
-                                
                             }
                             sentenceHtml.appendChild(img_minus);
                             

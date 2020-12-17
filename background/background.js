@@ -69,21 +69,21 @@ var background = {
     apiCall: 
             function(article){
                 let apiLink = "https://master-summarize-jeong-hyun-su.endpoint.ainize.ai/summary?article=" + article;
-
-                chrome.runtime.sendMessage({summary: article});
-                // fetch(apiLink)
-                // .then(response => {
-                //     if ( response.status == 200 )   
-                //         return response;
-                //     else                            
-                //         throw Error("Summary Error");
-                // })
-                // .then(response => response.text())
-                // .then(response => {
-                //     chrome.runtime.sendMessage({summary: response});
-                // })
-                // .catch(e =>{
-                // });
+                
+                fetch(apiLink)
+                .then(response => {
+                    if ( response.status == 200 )   
+                        return response;
+                    else                            
+                        throw Error("Summary Error");
+                })
+                .then(response => response.text())
+                .then(response => {
+                    response = response.substring(7, response.length - 4);
+                    chrome.runtime.sendMessage({summary: response});
+                })
+                .catch(e =>{
+                });
             },
 };
 
